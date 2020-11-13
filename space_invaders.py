@@ -1,33 +1,55 @@
-# Actors Class:
-
-# battleship (A)
-# bullet (A)
-# aliens (A) - score_amount
-# barrier (A)
-# alien mother ship up top (G)
-# back ground (G)
-
-#Properties:
-# speed
-# color
-# shape/image
-
-# Functions:
-# move bullet
-# remove_object_from_screen
+import arcade
 
 
+class Actor:
+    def __init__(self, speed, color, shape_of_actor):
+        self.speed = 0
+        self.color = arcade.color.GREEN
+        self.color = arcade.sprite.BLACK
 
-# Game Play Info Class:
-# Score (B) functions - increment_score, reset_score
-# Lives (B) function - take_away_life, reset_lives
+    def get_position(self):
+        pass
 
-# Game Play Class
-# main game loop (A)
-# start game (A)
-# end game (B)
-# reset (B)
+    def set_position(self):
+        pass
 
-# Input Service Class - get input from the user (e.g. move left, move right, fire bullet)
+    def been_hit_by_bullet(self):
+        # Object hit by bullet if bullet and object occupy the same space
+        pass
 
-# Output Service Class - print all objects to the screen and remove aliens that have been shot
+    def remove_items_from_screen(self):
+        # After an item has been hit we need to remove it from the screen
+        pass
+
+
+class Battleship(Actor):
+    def __init__(self, start_position, lives):
+        # 50 on the x axis will be the center of the map... The Y will always be 0.
+        self.start_position = 50, 0
+        self.lives = 3
+
+    def move_left(self):
+        pass
+
+    def move_right(self):
+        pass
+
+    def fire_bullet(self):
+        pass
+
+
+class Game_Window:
+    # We need to draw the window and set dimensions etc.
+    pass
+
+
+class Gameplay:
+    def game_loop(self):
+        # Draw Canvas
+        pass
+
+
+class Game_Play_Info:
+    def __init__(self, score, lives):
+        self.score = 0
+        self.lives = 3
