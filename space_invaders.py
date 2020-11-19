@@ -2,14 +2,14 @@ import arcade
 import curses
 import sys
 
-SCREEN_WIDTH = 500
+SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 500
 SCREEN_TITLE = "Space Invaders"
-OBJECT_SCALE = 1
+CHARACTER_SCALING = 1
 PLAYER_MOVE_SPEED = 10
 
 class Actor:
-    def __init__(self, speed, color, shape_of_actor):
+    def __init__(self, color, shape_of_actor):
         self.speed = 0
         self.color = None
         self.shape_of_actor = None
@@ -36,65 +36,50 @@ class Actor:
 
 
 class Battleship(Actor):
-    def __init__(self, lives, score):
-        lives = 3
-        score = 0
+    def __init__(self):
+        self.shape_of_actor = "battleship.png"
+        self.lives = 3
+        self.score = 0
         
-    
-    def show_battleship_sprite(self):
-        player = arcade.SpriteList()
-        image = "battleship.png"
-        battleship_sprite = arcade.Sprite(image, OBJECT_SCALE)
-        battleship_sprite.sprite_center_x = 20
-        battleship_sprite.sprite_center_y = 0
-        player.append(battleship_sprite)
-        player.draw()
-        
-        
-
     def movement(self, key, modifiers):
         if key == arcade.key.LEFT:
-            battleship_sprite.change_x = -PLAYER_MOVE_SPEED
+            self.shape_of_actor.change_x = -PLAYER_MOVE_SPEED
         elif key == arcade.key.RIGHT:
-            battlship_sprite.change_x = PLAYER_MOVE_SPEED
+            self.shape_of_actor.change_x = PLAYER_MOVE_SPEED
     
     def update_score(self, actor_hit):
         if actor_hit == 'alien':
-            score += 10
+            self.score += 10
         elif actor_hit == 'battleship':
-            score -= 10
-        return score
+            self.score -= 10
+        return self.score
 
 
 # Main game window that will have canvas on it and will have all the objects on it. Ship, aliens, barriers, bullets
-class Game_Window(arcade.Window):
+class MyGame(arcade.Window):
 
-    def __init__(self, width, height, title):
-        super().__init__(width, height, title)
-        self.player = None
-        self.batttleship_sprite = None
+    def __init__(self):
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        self.player_list = None
+        self.player_sprite = None
 
-    def load_game(self):
         arcade.set_background_color(arcade.color.BLACK)
-        battleship = Battleship(3, 0)
-        battleship.show_battleship_sprite()
-        arcade.start_render()
 
-        
+    def setup(self):
+
+        self.player_list = arcade.SpriteList()
+        image_source = ":resources:CSE210/battleship.png"
+        self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
+        self.player_sprite.center_x = 250
+        self.player_sprite.center_y = 250
+        self.player_list.append(self.player_sprite)
+        battleship = Battleship()
         # aliens = Alien()
         # barriers = Barrier()
-
-# This will be the main game logic and game loop. Put all the methods of each objects in here in logical order.
-class Gameplay:
-    def game_loop(self):
-        pass
-
-
-class Game_Play_Info:
-    def __init__(self, score, lives):
-        self.score = 0
-        self.lives = 3
-
+    
+    def on_draw(self):
+        arcade.start_render()
+        self.player_list.draw()
 
 class alien:
     def move_side_to_side(self):
@@ -109,14 +94,15 @@ class alien:
                 alien.move(0,5)
 
     def hit(self):
-        # alien disappers once hit 
+        # alien disappers once hit
+        pass
 
     def get_pictures(self):
         # get both pictures for up alien and down alien
         picture = pygame.image.load(yellowsquare.piskel)
         for alien in aliens:
-        alien.draw()
-        #hek=llo
+            alien.draw()
+            #hek=llo
 
 # Get input from the user move left, move right, when bullet is fired
 class Input_Service:
@@ -141,8 +127,8 @@ class Output_Service:
         pass
 
 def main():
-    game = Game_Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    game.load_game()
+    window = MyGame()
+    window.setup()
     arcade.run()
 
 if __name__ == "__main__":
