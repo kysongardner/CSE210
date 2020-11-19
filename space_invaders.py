@@ -53,3 +53,25 @@ class Game_Play_Info:
     def __init__(self, score, lives):
         self.score = 0
         self.lives = 3
+
+class alien:
+    def move_side_to_side(self):
+        # loop that moves left and then right until end of game
+        # touch wall a bounce back
+        alien_place_x += alien_place_x_speed
+        for alien in aliens:
+            alien.move(alien_place_x_speed, 0)
+        if alien_place_x >= 200 or alien_place_x <= 0:
+            alien_place_x_speed = -1 * alien_place_x_speed
+            for alien in aliens:
+                alien.move(0,5)
+
+    def hit(self):
+        # alien disappers once hit 
+
+    def get_pictures(self):
+        # get both pictures for up alien and down alien
+        picture = pygame.image.load(yellowsquare.piskel)
+        for alien in aliens:
+        alien.draw()
+
