@@ -74,4 +74,5 @@ class alien:
         picture = pygame.image.load(yellowsquare.piskel)
         for alien in aliens:
         alien.draw()
+        #hek=llo
 
