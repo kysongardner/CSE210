@@ -2,12 +2,16 @@ import arcade
 import curses
 import sys
 
+SCREEN_WIDTH = 500
+SCREEN_HEIGHT = 500
+SCREEN_TITLE = "Space Invaders"
+OBJECT_SCALE = 1
+PLAYER_MOVE_SPEED = 10
 
 class Actor:
     def __init__(self, speed, color, shape_of_actor):
         self.speed = 0
-        self.color = arcade.color.GREEN
-        self.color = arcade.sprite.BLACK
+        self.color = None
         self.shape_of_actor = None
 
     def get_position(self):
@@ -16,7 +20,7 @@ class Actor:
     def set_position(self):
         pass
 
-    def been_hit_by_bullet(self):
+    def is_hit_by_bullet(self):
         # Object hit by bullet if bullet and object occupy the same space
         pass
 
@@ -32,31 +36,57 @@ class Actor:
 
 
 class Battleship(Actor):
-    def __init__(self, start_position, lives):
-        # 50 on the x axis will be the center of the map... The Y will always be 0.
-        self.start_position = 50, 0
-        self.lives = 3
-        self.shape_of_actor = None
+    def __init__(self, lives, score):
+        lives = 3
+        score = 0
+        
+    
+    def show_battleship_sprite(self):
+        player = arcade.SpriteList()
+        image = "battleship.png"
+        battleship_sprite = arcade.Sprite(image, OBJECT_SCALE)
+        battleship_sprite.sprite_center_x = 20
+        battleship_sprite.sprite_center_y = 0
+        player.append(battleship_sprite)
+        player.draw()
+        
+        
 
-    def move_left(self):
-        pass
+    def movement(self, key, modifiers):
+        if key == arcade.key.LEFT:
+            battleship_sprite.change_x = -PLAYER_MOVE_SPEED
+        elif key == arcade.key.RIGHT:
+            battlship_sprite.change_x = PLAYER_MOVE_SPEED
+    
+    def update_score(self, actor_hit):
+        if actor_hit == 'alien':
+            score += 10
+        elif actor_hit == 'battleship':
+            score -= 10
+        return score
 
-    def move_right(self):
-        pass
 
+# Main game window that will have canvas on it and will have all the objects on it. Ship, aliens, barriers, bullets
+class Game_Window(arcade.Window):
 
-class Game_Window:
-    # We need to draw the window and set dimensions etc.
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
+        self.player = None
+        self.batttleship_sprite = None
+
     def load_game(self):
-        arcade.open_window(500, 500, "Space Invaders")
         arcade.set_background_color(arcade.color.BLACK)
+        battleship = Battleship(3, 0)
+        battleship.show_battleship_sprite()
         arcade.start_render()
-        battleship = arcade.sprite('battleship.piskel')
 
+        
+        # aliens = Alien()
+        # barriers = Barrier()
 
+# This will be the main game logic and game loop. Put all the methods of each objects in here in logical order.
 class Gameplay:
     def game_loop(self):
-        # Draw Canvas
         pass
 
 
@@ -86,3 +116,11 @@ class Input_Service:
 class Output_Service:
     def __init__(self):
         pass
+
+def main():
+    game = Game_Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    game.load_game()
+    arcade.run()
+
+if __name__ == "__main__":
+    main()
