@@ -104,6 +104,24 @@ class alien:
             alien.draw()
             #hek=llo
 
+Class Blocks:
+    def make_barrier(self):
+    	"""
+	Making a 2D block grid of solid color sprites close together without margin
+	"""
+	barrier_width = 5
+	barrier_height = 10
+	barrier_width_count = 20
+	barrier_height_count = 5
+	x_start = 380
+	y_start = 150
+	for x in range(x_start, x_start + barrier_width_count * barrier_width, barrier_width):
+	    for y in range(y_start, y_start + barrier_height_count * barrier_height, barrier_height):
+		barrier_sprite = arcade.SpriteSolidColor(barrier_width, barrier_height. Arcade.color.GREEN)
+		barrier_sprite.center_x = x
+		barrier_sprite.center_y = y
+		self.barrier_list.append(barrier_sprite)
+
 # Get input from the user move left, move right, when bullet is fired
 class Input_Service:
     def __init__(self, window):
