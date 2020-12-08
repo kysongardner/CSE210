@@ -92,7 +92,7 @@ class MyGame(arcade.Window):
 
         self.player_sprite = Player()
         self.player_sprite.center_x = 250
-        self.player_sprite.center_y = 250
+        self.player_sprite.center_y = 1
         self.player_list.append(self.player_sprite)
 
         # for i in range(1, 50):
