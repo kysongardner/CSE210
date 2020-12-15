@@ -230,7 +230,6 @@ class Alien(Actor):
         def __init__(self):
             self.score = 0
             self.text_score = "Score:" + self.score
-            arcade.draw_text(self.text_score, 200, 200, arcade.set_background_color.WHITE, 50)
         
         def update_score(self):
             player_bullets = self.get_gameview().get_actors_by_tag("player_bullet")
