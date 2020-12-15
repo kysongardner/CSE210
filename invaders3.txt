@@ -76,9 +76,10 @@ class Bullet(Actor):
         self.scale = CHARACTER_SCALING
 
 
+
 class Guns(Actor):
 
-    MIN_CHARGE = 80
+    MIN_CHARGE = 120
 
     def __init__(self, player, bullet_direction_UP_or_DOWN):
         self.charge = 0
@@ -106,6 +107,8 @@ class Guns(Actor):
             bullet.change_y = -BULLET_SPEED
         bullet.setup()
         self.player.get_gameview().add_actor(bullet)
+    
+
 
 
 class Player(Actor):
@@ -202,9 +205,14 @@ class Alien(Actor):
 
 class BulletAlienCollisionHandler(CollisionHandler):
 
-    def __init__(self, aliens, bullets):
+    def __init__(self, bullet, alien):
         pass
 
+    def on_collision(self):
+        for bullet in main_view._actors:
+                collided = arcade.check_for_collision(bullet, alien)
+                if collided:
+                    print("collided!")
     # def on_collision(self):
         # nested for loop that checks all bullets against all aliends
         # collided = arcade.check_for_collision(bullet, alien)
@@ -264,62 +272,62 @@ class GameFactory:
 
     def create_mainview(self):
         player = Player()
-        alien3 = Alien(150, 500)
-        alien4 = Alien(200, 500)
-        alien5 = Alien(250, 500)
-        alien6 = Alien(300, 500)
-        alien7 = Alien(350, 500)
-        alien8 = Alien(400, 500)
-        alien9 = Alien(450, 500)
-        alien10 = Alien(500, 500)
-        alien11 = Alien(550, 500)
-        alien12 = Alien(600, 500)
-        alien13 = Alien(650, 500)
-
-        alien14 = Alien(150, 450)
-        alien15 = Alien(200, 450)
-        alien16 = Alien(250, 450)
-        alien17 = Alien(300, 450)
-        alien18 = Alien(350, 450)
-        alien19 = Alien(400, 450)
-        alien20 = Alien(450, 450)
-        alien21 = Alien(500, 450)
-        alien22 = Alien(550, 450)
-        alien23 = Alien(600, 450)
-        alien24 = Alien(650, 450)
+        alien1 = Alien(150, 500)
+        alien2 = Alien(200, 500)
+        alien3 = Alien(250, 500)
+        alien4 = Alien(300, 500)
+        alien5 = Alien(350, 500)
+        alien6 = Alien(400, 500)
+        alien7 = Alien(450, 500)
+        alien8 = Alien(500, 500)
+        alien9 = Alien(550, 500)
+        alien10 = Alien(600, 500)
+        alien11 = Alien(650, 500)
+        alien12 = Alien(150, 450)
+        alien13 = Alien(200, 450)
+        alien14 = Alien(250, 450)
+        alien15 = Alien(300, 450)
+        alien16 = Alien(350, 450)
+        alien17 = Alien(400, 450)
+        alien18 = Alien(450, 450)
+        alien19 = Alien(500, 450)
+        alien20 = Alien(550, 450)
+        alien21 = Alien(600, 450)
+        alien22 = Alien(650, 450)
         
-        bullet = Bullet()
-        # NEED TO ADD THE WHOLE LIST OF ALIENS INTO THIS EVENT HANDLER....
-        # I AM SURE THERE IS A BETTER WAY TO DO THE ALIENS WITH A LIST 
-        # BUT I DIDN'T WANT TO MESS THINGS UP SO I DID IT THIS WAY... 
-        bullet_alien_collision_handler = BulletAlienCollisionHandler(alien3, bullet)
-
+        alien_list = []
+        alien_list.append(alien1)
+        alien_list.append(alien2)
+        alien_list.append(alien3)
+        alien_list.append(alien4)
+        alien_list.append(alien5)
+        alien_list.append(alien6)
+        alien_list.append(alien7)
+        alien_list.append(alien8)
+        alien_list.append(alien9)
+        alien_list.append(alien10)
+        alien_list.append(alien11)
+        alien_list.append(alien12)
+        alien_list.append(alien13)
+        alien_list.append(alien14)
+        alien_list.append(alien15)
+        alien_list.append(alien16)
+        alien_list.append(alien17)
+        alien_list.append(alien18)
+        alien_list.append(alien19)
+        alien_list.append(alien20)
+        alien_list.append(alien21)
+        alien_list.append(alien22)
+        
         main_view = GameView()
         main_view.add_actor(player)
-        main_view.add_actor(alien3)
-        main_view.add_actor(alien4)
-        main_view.add_actor(alien5)
-        main_view.add_actor(alien6)
-        main_view.add_actor(alien7)
-        main_view.add_actor(alien8)
-        main_view.add_actor(alien9)
-        main_view.add_actor(alien10)
-        main_view.add_actor(alien11)
-        main_view.add_actor(alien12)
-        main_view.add_actor(alien13)
-        main_view.add_actor(alien14)
-        main_view.add_actor(alien15)
-        main_view.add_actor(alien16)
-        main_view.add_actor(alien17)
-        main_view.add_actor(alien18)
-        main_view.add_actor(alien19)
-        main_view.add_actor(alien20)
-        main_view.add_actor(alien21)
-        main_view.add_actor(alien22)
-        main_view.add_actor(alien23)
-        main_view.add_actor(alien24)
-
-
+        
+        for alien in alien_list:
+            main_view.add_actor(alien)
+        
+        
+        bullet_alien_collision_handler = BulletAlienCollisionHandler(main_view._actors, alien_list)
+        
         main_view.add_handler(bullet_alien_collision_handler)
         return main_view
 

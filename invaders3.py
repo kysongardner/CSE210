@@ -26,9 +26,13 @@ BULLET_SPEED = 5
 # ------------------------------------------------------------------------------
 class Actor(arcade.Sprite):
     
-    def __init__(self):
+    def __init__(self, tag):
         super().__init__()
         self._game_view = None
+        self._tag = tag
+    
+    def get_tag(self):
+        return self._tag
         
     def get_gameview(self):
         return self._game_view
@@ -54,26 +58,43 @@ class Actor(arcade.Sprite):
 
 class CollisionHandler:
 
+
+    def __init__(self):
+        self._game_view = None
+
     def on_collision(self):
         pass
+
+    def set_gameview(self, game_view):
+        self._game_view = game_view
+
+    def get_gameview(self):
+        return self._game_view
 
 
 class Bullet(Actor):
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, tag):
+        super().__init__(tag)
     
     def on_draw(self):
         super().draw()
 
     def on_update(self):
         self.center_y += self.change_y
+        self._limit_vertical_position()
 
     def setup(self):
         filename = CURRENT_FOLDER + "/bullet.png"
         texture = arcade.load_texture(filename)
         self.texture = texture
         self.scale = CHARACTER_SCALING
+
+    def _limit_vertical_position(self):
+        if self.bottom < 0:
+            self.get_gameview().remove_actor(self)
+        elif self.top > SCREEN_HEIGHT - 1:
+            self.get_gameview().remove_actor(self)
 
 
 
@@ -98,7 +119,10 @@ class Guns(Actor):
             self.triggered = False
     
     def _add_bullet(self):
-        bullet = Bullet()
+        tag = "player_bullet"
+        if self.bullet_direction_UP_or_DOWN == "DOWN":
+            tag = "alien_bullet"
+        bullet = Bullet(tag)
         bullet.center_x = self.player.center_x
         bullet.center_y = self.player.center_y
         if self.bullet_direction_UP_or_DOWN == "UP":
@@ -109,12 +133,10 @@ class Guns(Actor):
         self.player.get_gameview().add_actor(bullet)
     
 
-
-
 class Player(Actor):
 
     def __init__(self):
-        super().__init__()
+        super().__init__("player")
         self.lives = 3
         self.score = 0
         self.guns = Guns(self, "UP")
@@ -162,7 +184,7 @@ class Player(Actor):
 class Alien(Actor):
     
     def __init__(self, position_x, position_y):
-        super().__init__()
+        super().__init__("alien")
         self.lives = 3
         self.score = 0
         self.guns = Guns(self, "DOWN")
@@ -193,14 +215,35 @@ class Alien(Actor):
     def _limit_horizontal_position(self):
         if self.left <= self.barrier_left:
             self.change_x += 1
+            self.center_y -= 5
         elif self.right >= self.barrier_right:
             self.change_x -= 1
+            self.center_y -= 5
 
     def _limit_vertical_position(self):
         if self.bottom < 0:
             self.bottom = 0
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
+
+    class Score(Actor):
+        def __init__(self):
+            self.score = 0
+            self.text_score = "Score:" + self.score
+            arcade.draw_text(self.text_score, 200, 200, arcade.set_background_color.WHITE, 50)
+        
+        def update_score(self):
+            player_bullets = self.get_gameview().get_actors_by_tag("player_bullet")
+            aliens = self.get_gameview().get_actors_by_tag("alien")
+            for bullet in player_bullets:
+                for alien in aliens:
+                    collided = arcade.check_for_collision(bullet, alien)
+                    if collided:
+                        self.score += 10
+
+        def on_update(self):
+            self.update_score()
+            
 
 
 class BulletAlienCollisionHandler(CollisionHandler):
@@ -209,17 +252,35 @@ class BulletAlienCollisionHandler(CollisionHandler):
         pass
 
     def on_collision(self):
-        for bullet in main_view._actors:
+        player_bullets = self.get_gameview().get_actors_by_tag("player_bullet")
+        alien_bullets = self.get_gameview().get_actors_by_tag("alien_bullet")
+        players = self.get_gameview().get_actors_by_tag("player")
+        aliens = self.get_gameview().get_actors_by_tag("alien")
+        
+        # Remove alien and battleship bullet
+        for bullet in player_bullets:
+            for alien in aliens:
                 collided = arcade.check_for_collision(bullet, alien)
                 if collided:
-                    print("collided!")
-    # def on_collision(self):
-        # nested for loop that checks all bullets against all aliends
-        # collided = arcade.check_for_collision(bullet, alien)
-        # if collided == True:
-        #     remove the bullet from the gameview
-        #     bullet.get_gameview().remove_actor(bullet)
-        # print("we collided!")
+                    self.get_gameview().remove_actor(alien)
+                    self.get_gameview().remove_actor(bullet)
+
+        # Remove alien bullet and battleship
+        for bullet in alien_bullets:
+            for player in players:
+                collided = arcade.check_for_collision(bullet, player)
+                if collided:
+                    self.get_gameview().remove_actor(bullet)
+                    self.get_gameview().remove_actor(player)
+                    self.get_gameview().game_over()
+
+        # Remove battleship if alien and battleship collide
+        for alien in aliens:
+            for player in players:
+                collided = arcade.check_for_collision(alien, player)
+                if collided:
+                    self.get_gameview().remove_actor(player)
+                    self.get_gameview().game_over()
 
 # ------------------------------------------------------------------------------
 # Game View Classes
@@ -239,6 +300,17 @@ class GameView(arcade.View):
     def add_handler(self, handler):
         if handler not in self._collision_handlers:
             self._collision_handlers.append(handler)
+            handler.set_gameview(self)
+    
+    def get_actors(self):
+        return self._actors
+    
+    def get_actors_by_tag(self, tag):
+        actors = []
+        for actor in self._actors:
+            if actor.get_tag() == tag:
+                actors.append(actor)
+        return actors
 
     def on_draw(self):
         arcade.start_render()
@@ -266,6 +338,11 @@ class GameView(arcade.View):
     def setup(self):
         for actor in self._actors:
             actor.setup()
+    
+    def game_over(self):
+        for actor in self._actors:
+            actor.change_x = 0
+            actor.change_y = 0
 
 
 class GameFactory:
